@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie-Mage: A Movie Recommendation System</title>
+    <!-- Link to Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto py-12">
+        <!-- Title of the page -->
+        <h1 class="text-center text-3xl font-bold mb-8">Movie-Mage: Movie Recommendation System</h1>
+
+        <!-- Form to select a movie and number of recommendations -->
+        <form method="POST" class="text-center mb-6">
+            <div>
+                <label for="movie_title" class="block text-lg mb-2">Select a Movie Title</label>
+                <select name="movie_title" id="movie_title"
+                    class="w-full max-w-4xl mx-auto mb-8 p-3 rounded bg-gray-800 text-white">
+                    <!-- Loop through the list of movie titles passed from Flask -->
+                    {% for title in movie_titles %}
+                    <option value="{{ title }}">{{ title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dropdown to select number of recommendations -->
+            <div>
+                <label for="n" class="block text-lg mb-2">Number of Recommendations per Section</label>
+                <select name="n" id="n" class="w-full max-w-4xl mx-auto mb-8 p-3 rounded bg-gray-800 text-white">
+                    <!-- Loop to create options for selecting the number of recommendations -->
+                    {% for i in range(1, 6) %}
+                    <option value="{{ i }}" {% if n==i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Submit button to fetch recommendations -->
+            <div>
+                <button type="submit" class="mt-4 px-6 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-400">
+                    Recommend
+                </button>
+            </div>
+        </form>
+
+        <!-- Display the selected movie details -->
+        {% if selected_movie %}
+        <hr class="mt-16 mb-8">
+        <div class="text-center mb-8">
+            {% if selected_movie.title == "Movie Not Found" %}
+            <h2 class="text-2xl font-semibold mb-2">{{ selected_movie.title }}</h2>
+            {% else %}
+            <!-- Display selected movie thumbnail and title -->
+            <img src="{{ selected_movie.thumbnail }}" alt="{{ selected_movie.title }}"
+                class="w-64 h-auto mx-auto mb-3 rounded">
+            <h2 class="text-2xl font-semibold mb-2">{{ selected_movie.title }}</h2>
+            {% endif %}
+        </div>
+        <hr class="mt-8 mb-0">
+        {% endif %}
+
+        <!-- Display the movie recommendations -->
+        {% if movie_details %}
+        {% for basis, movies in movie_details.items() %}
+        <div class="mt-12">
+            <!-- Display heading for the type of recommendation (e.g., Similar Cast, Similar Genres) -->
+            <h2 class="text-2xl font-semibold text-center">{{ basis }}</h2>
+            <hr class="mt-2 mb-8">
+            <div class="flex justify-around flex-wrap">
+                <!-- Loop through and display each recommended movie -->
+                {% for movie in movies %}
+                <div class="w-1/5 text-center">
+                    <!-- Display movie thumbnail and title -->
+                    <img src="{{ movie.thumbnail }}" alt="{{ movie.title }}" class="w-3/4 h-auto rounded mb-3 mx-auto">
+                    <h3 class="text-lg">{{ movie.title }}</h3>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</body>
+
+</html>
